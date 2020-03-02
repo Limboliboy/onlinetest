@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>在线听歌答题</title>
+	<style type="text/css">
+		#main,#feedback,#correctAnswer,#allRight{
+			display: none;
+		}
+		audio{
+			display: inline-block;
+			vertical-align: -35px;
+			margin-bottom: 10px;
+			margin-left: 25%;
+			width: 50%;
+		}
+		[type="radio"]{
+			vertical-align: top;
+		}
+		img{
+			display: inline-block;
+			width: 630px;
+			height: 390px;
+		}
+		li{
+			margin-bottom: 25px;
+		}
+		#submitbtn{
+			display: block;
+			background-color: orange;
+			width: 150px;
+			height: 25px;
+			margin: 0 auto;
+			border-radius: 5px;
+		}
+		#submitbtn:hover{
+			background-color: darkorange;
+		}
+		#welcome{
+			text-align: center;
+		}
+		.flex_father{
+			display: flex;
+			justify-content: space-around;
+		}
+	</style>
+</head>
+<body>
+	<div id="main">
+		<h1 id="welcome">欢迎参加本期“你听你猜”有奖答题，本期的题目有：</h1>
+		<ol id="answer"></ol>
+		<input type="button" id="submitbtn" value="提交" onclick="Submit()" />
+	</div>
+	
+	<div id="feedback">
+		<p>你的得分是：<span id="mark" style="color: red"></span></p>
+		<div id="correctAnswer">
+			<p>下面是答错的题目：</p>
+			<ul id="correctAnswer_ul"></ul>
+		</div>
+		<p id="allRight">全答对了，你真厉害，满分！</p>
+	</div>
+</body>
+<script type="text/javascript">
+	window.onload = function() {
+		document.getElementById("main").style.display="block";
+		//生成随即试卷
+		Test();
+	}
+	//题库
+	var answers=[{Id:1,Desc:"新海诚作品《你的名字》的主题曲",Audiosrc:"audio/yourname.mp3",Options:{A:"image/gardenofwoods.jpg",B:"image/yourname.jpg"},Answer:"B"},{Id:2,Desc:"改编自岸本齐史漫画《火影忍者疾风传》的动画片头曲——《青鸟》",Audiosrc:"audio/bluebird.mp3",Options:{A:"image/bluebird.jpg",B:"image/reborn.jpg"},Answer:"A"},{Id:3,Desc:"改编自尾田荣一郎漫画《海贼王》的动画配乐——《宾克斯的美酒》",Audiosrc:"audio/onepiece.mp3",Options:{A:"image/dragonball.jpg",B:"image/onepiece.jpg"},Answer:"B"},{Id:4,Desc:"改编自村田雄介漫画《一拳超人》的片头曲",Audiosrc:"audio/onepunch.mp3",Options:{A:"image/overload.jpg",B:"image/onepunch.jpg"},Answer:"B"},{Id:5,Desc:"动画《数码宝贝》的配乐",Audiosrc:"audio/digitalmonster.mp3",Options:{A:"image/digitalmonster.jpeg",B:"image/pokemon.jpeg"},Answer:"A"},{Id:6,Desc:"改编自空知英秋漫画《银魂》的动画片头曲",Audiosrc:"audio/gintama.mp3",Options:{A:"image/parasite.jpeg",B:"image/gintama.jpg"},Answer:"B"},{Id:7,Desc:"改编自绿川幸漫画《夏目友人帐》的动画配乐",Audiosrc:"audio/natsume'sbookoffriends.mp3",Options:{A:"image/mushishi.jpg",B:"image/natsume'sbookoffriends.jpg"},Answer:"B"},{Id:8,Desc:"改编自时雨泽慧一小说《奇诺之旅》的动画片头曲",Audiosrc:"audio/thebeautifulworld.mp3",Options:{A:"image/thebeautifulworld.jpg",B:"image/lightoffirefliesforest.jpg"},Answer:"A"},{Id:9,Desc:"改编自大金良时的漫画《声之形》的电影片尾曲",Audiosrc:"audio/shapeofvoice.mp3",Options:{A:"image/shapeofvoice.jpg",B:"image/shortstoriesaboutdistance.jpg"},Answer:"A"},{Id:10,Desc:"动画《名侦探柯南》的破案专属配乐",Audiosrc:"audio/detectiveconan.mp3",Options:{A:"image/detectiveconan.jpg",B:"image/doraemon.jpg"},Answer:"A"}];
+	//随机试卷
+	var test=[];
+	function Test() {
+		//随即试卷中题目的数量
+		var count=0;
+		//记录随机题目的id
+		var randoms=[];
+		//产生规定范围的随机数
+		var random;
+		while(count<10){
+			//随机选取题目
+			random=parseInt(10*Math.random());
+			//随机试卷中已有这道题目
+			if(randoms.length>0&&randoms.indexOf(random)>-1){
+				continue;
+			}
+			//随机试卷没有该题目则加入本题
+			randoms.push(random);
+			test.push(answers[random]);
+			count++;
+		}
+		var html = '';
+		for(var l=0;l<test.length;l++){
+			html+='<li id="'+test[l]['Id']+'"><audio controls src="'+test[l]['Audiosrc']+'"></audio><div class="flex_father">'+'<div class="flex"><input type="radio" id="'+test[l]['Id']+'A" name="'+test[l]['Id']+'options" value="A" />'+'<label for="'+test[l]['Id']+'A">'+'<img src="'+test[l]['Options']['A']+'"></label></div>'+'<div class="flex"><input type="radio" id="'+test[l]['Id']+'B" name="'+test[l]['Id']+'options" value="B" />'+'<label for="'+test[l]['Id']+'B">'+'<img src="'+test[l]['Options']['B']+'"></label></div>'+'</div></li>';
+		}
+		var test_ol = document.getElementById("answer");
+		test_ol.innerHTML = html;
+	}
+	function Submit(){
+		//分数
+		var m=0;
+		//获取所有题目
+		var get_choose =document.getElementById("answer").getElementsByTagName("li");
+		//检测是否把全部题目做完
+		for(var  i=0;i<get_choose.length;i++){
+			var get_input=get_choose[i].getElementsByTagName("input");
+			var done=false;
+			for(var j=0;j<get_input.length;j++){
+				if(get_input[j].checked){
+					done=true;
+					break;
+				}
+			}
+			if(!done){
+				alert("请把所有题目做完！");
+				return;
+			}
+		}
+		var correctHtml="";
+		//计算得分，遍历每道题
+		for(var a=0;a<get_choose.length;a++){
+			var get_input=get_choose[a].getElementsByTagName("input");
+			var rightOrFalse=false;
+			for(var b=0;b<get_input.length;b++){
+				if(get_input[b].checked){
+					//遍历答案数组，找到对应id的题目
+					for(var c=0;c<test.length;c++){
+						if(test[c]["Id"]==get_choose[a].id){
+							if(get_input[b].value==test[c]["Answer"]){
+								m+=10;
+							}
+							else{
+								correctHtml+='<li style="list-style-type:none">第'+(a+1)+'题正确答案是'+test[c]["Answer"]+'，歌曲是'+test[c]["Desc"]+'</li>';
+							}
+						}
+					}
+				}
+			}
+		}
+		document.getElementById("correctAnswer_ul").innerHTML=correctHtml;
+		document.getElementById("mark").innerText=m;
+		if(m==100){
+			document.getElementById("allRight").style.display="block";
+			document.getElementById("correctAnswer").style.display="none";
+		}
+		else{
+			document.getElementById("correctAnswer").style.display="block";
+			document.getElementById("allRight").style.display="none";
+		}
+		var open=window.open();
+		open.document.write(document.getElementById("feedback").innerHTML);
+		open.document.close();
+	}
+</script>
+</html>
