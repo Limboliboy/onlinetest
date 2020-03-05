@@ -77,7 +77,7 @@
 		var randoms=[];
 		//产生规定范围的随机数
 		var random;
-		while(count<10){
+		while(count<5){
 			//随机选取题目
 			random=parseInt(10*Math.random());
 			//随机试卷中已有这道题目
@@ -127,7 +127,7 @@
 					for(var c=0;c<test.length;c++){
 						if(test[c]["Id"]==get_choose[a].id){
 							if(get_input[b].value==test[c]["Answer"]){
-								m+=10;
+								m+=20;
 							}
 							else{
 								correctHtml+='<li style="list-style-type:none">第'+(a+1)+'题正确答案是'+test[c]["Answer"]+'，歌曲是'+test[c]["Desc"]+'</li>';
